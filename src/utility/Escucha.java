@@ -19,6 +19,7 @@ public class Escucha extends JFrame{
         setSize(360, 240);
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        entrada = "";
         pis = new PipedInputStream(pos);
         miLibro = new File(System.getProperty("user.dir") + "/src/out/miLibro.txt");
         escucharUnCuento = () -> escucharElCuento(pis);
@@ -29,10 +30,10 @@ public class Escucha extends JFrame{
             int verso = -1;
             this.escritor = new BufferedWriter(new FileWriter(this.miLibro));
             while ((verso = pis.read()) != -1) {
-                this.entrada += Character.toString(((char) verso));
+                this.entrada = Character.toString(((char) verso));
+                this.escritor.write(entrada);
             }
             this.setVisible(true);
-            this.escritor.write(entrada);
             this.escritor.close();
             pis.close();
         } catch (Exception e) {

@@ -38,9 +38,7 @@ public class Lector extends JFrame {
                 caracter = elCuento.charAt(i);
                 this.Texto.append(Character.toString(caracter));
                 Thread.sleep(1);
-                if (caracter == '\n') {
-                    pos.write(((byte) caracter));
-                }
+                pos.write(((byte) caracter));
             }
             pos.flush();
             System.out.println("Buenas noches");
