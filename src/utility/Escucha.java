@@ -1,4 +1,4 @@
-package java;
+package utility;
 
 import javax.swing.*;
 import java.io.*;
@@ -27,15 +27,13 @@ public class Escucha extends JFrame{
     public void escucharElCuento(PipedInputStream pis) {
         try {
             int verso = -1;
-            escritor = new BufferedWriter(new FileWriter(miLibro));
+            this.escritor = new BufferedWriter(new FileWriter(this.miLibro));
             while ((verso = pis.read()) != -1) {
-                entrada = Character.toString(((char) verso));
-                if (entrada.equals("Buenas Noches")) {
-                    this.setVisible(true);
-                }
-                escritor.write(entrada);
+                this.entrada += Character.toString(((char) verso));
             }
-            escritor.close();
+            this.setVisible(true);
+            this.escritor.write(entrada);
+            this.escritor.close();
             pis.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -43,7 +41,7 @@ public class Escucha extends JFrame{
     }
 
     public void start() {
-        new Thread(escucharUnCuento).start();
+        new Thread(this.escucharUnCuento).start();
     }
 
 }

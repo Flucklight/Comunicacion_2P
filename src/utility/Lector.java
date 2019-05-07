@@ -1,4 +1,4 @@
-package java;
+package utility;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,7 +37,7 @@ public class Lector extends JFrame {
             for (int i = 0; i < elCuento.length(); i++) {
                 caracter = elCuento.charAt(i);
                 this.Texto.append(Character.toString(caracter));
-                Thread.sleep(100);
+                Thread.sleep(1);
                 if (caracter == '\n') {
                     pos.write(((byte) caracter));
                 }
