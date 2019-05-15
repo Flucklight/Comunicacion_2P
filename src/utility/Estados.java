@@ -1,5 +1,5 @@
 package utility;
 
 public enum Estados {
-    ESPERA, ESCRITURA, LECTURA
+    ESPERA, ESCRITURA, LECTURA, CREACION, TERMINAR
 }

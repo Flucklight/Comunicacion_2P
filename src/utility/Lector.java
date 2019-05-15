@@ -15,8 +15,6 @@ public class Lector extends JFrame {
     private File cuento;
     private File direccionDeMemoria;
     private BufferedReader cargar;
-    private BufferedReader bandera;
-    private BufferedWriter cambioEstado;
     private Runnable contarUnCuneto;
 
     public Lector() throws IOException {
@@ -26,17 +24,17 @@ public class Lector extends JFrame {
         setResizable(false);
         setLocationRelativeTo(this);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        estado = Estados.CREACION;
         pos = new PipedOutputStream();
-        cuento = new File(System.getProperty("user.dir") + "/src/items/cuento.txt");
         direccionDeMemoria = new File(System.getProperty("user.dir") + "/src/items/5000.mem");
-        bandera = new BufferedReader(new FileReader(direccionDeMemoria));
-        cambioEstado = new BufferedWriter(new FileWriter(direccionDeMemoria));
+        cuento = new File(System.getProperty("user.dir") + "/src/items/cuento.txt");
         cargar = new BufferedReader(new FileReader(cuento));
         String s;
         while ((s = cargar.readLine()) != null) {
             elCuento += s + "\n";
         }
         contarUnCuneto = () -> contarElCuento(pos);
+        manejoDeSeccionCritica();
     }
 
     public void contarElCuento(PipedOutputStream pos) {
@@ -51,11 +49,8 @@ public class Lector extends JFrame {
                         caracter = elCuento.charAt(i);
                         i++;
                         Texto.append(Character.toString(caracter));
-                        Thread.sleep(10);
                         pos.write(((byte) caracter));
-                        cambioEstado.write(1);
-                        cambioEstado.close();
-                        estado = Estados.ESPERA;
+                        manejoDeSeccionCritica();
                         break;
                 }
             }while (i < elCuento.length());
@@ -67,15 +62,34 @@ public class Lector extends JFrame {
         }
     }
 
-    public void manejoDeSeccionCritica() {
-        try {
-            String s = bandera.readLine();
-            bandera.close();
-            if (s.equals("0")){
-                estado = Estados.ESCRITURA;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void manejoDeSeccionCritica() throws IOException {
+        switch (this.estado) {
+            case CREACION:
+                BufferedWriter cambioEstado0 = new BufferedWriter(new FileWriter(this.direccionDeMemoria));
+                cambioEstado0.write("0");
+                cambioEstado0.close();
+                estado = Estados.ESPERA;
+                break;
+            case ESCRITURA:
+                BufferedWriter cambioEstado1 = new BufferedWriter(new FileWriter(this.direccionDeMemoria));
+                cambioEstado1.write("1");
+                cambioEstado1.close();
+                estado = Estados.ESPERA;
+                break;
+            case ESPERA:
+                BufferedReader bandera = new BufferedReader(new FileReader(this.direccionDeMemoria));
+                String s = bandera.readLine();
+                bandera.close();
+                if (s.equals("0")){
+                    estado = Estados.ESCRITURA;
+                } else {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
         }
     }
 
